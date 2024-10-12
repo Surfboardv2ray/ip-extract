@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>v2ray Config Extractor - Surfboardv2ray</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #333;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      width: 400px;
+    }
+
+    h1 {
+      color: #ff7a00;
+      text-align: center;
+    }
+
+    .input-area, .result-area {
+      margin-bottom: 20px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-family: inherit;
+      resize: none;
+    }
+
+    .result-box {
+      position: relative;
+    }
+
+    .result {
+      width: 100%;
+      height: 100px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #f5f5f5;
+      font-family: monospace;
+      white-space: pre-wrap;
+      overflow-y: auto;
+    }
+
+    .copy-icon {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      cursor: pointer;
+      color: #ff7a00;
+    }
+
+    button {
+      width: 100%;
+      padding: 10px;
+      background-color: #ff7a00;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background-color: #e56d00;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Config IP Extractor</h1>
+    <div class="input-area">
+      <textarea id="configInput" placeholder="Paste your v2ray, vless, or trojan configs here..."></textarea>
+    </div>
+    <button onclick="processConfig()">Extract IP Addresses</button>
+    <div class="result-area">
+      <div class="result-box">
+        <div class="result" id="resultBox"></div>
+        <span class="copy-icon" onclick="copyToClipboard()">📋</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function isBase64(str) {
+      try {
+        return btoa(atob(str)) === str;
+      } catch (err) {
+        return false;
+      }
+    }
+
+    function extractIpFromUrl(url) {
+      const atIndex = url.indexOf('@');
+      const colonIndex = url.indexOf(':', atIndex);
+      if (atIndex !== -1 && colonIndex !== -1) {
+        return url.substring(atIndex + 1, colonIndex);
+      }
+      return null;
+    }
+
+    function processConfig() {
+      const input = document.getElementById('configInput').value.trim().split('\n');
+      const resultBox = document.getElementById('resultBox');
+      let extractedIPs = [];
+
+      input.forEach(line => {
+        line = line.trim();
+        
+        if (line.startsWith('vmess://')) {
+          const base64Part = line.slice(8); // Remove 'vmess://'
+          if (isBase64(base64Part)) {
+            const decoded = atob(base64Part);
+            try {
+              const config = JSON.parse(decoded);
+              if (config.add) {
+                extractedIPs.push(config.add);
+              }
+            } catch (e) {
+              console.error('Invalid JSON in decoded config:', decoded);
+            }
+          }
+        } else if (line.startsWith('vless://') || line.startsWith('trojan://')) {
+          // Handle vless and trojan in similar fashion
+          const ip = extractIpFromUrl(line);
+          if (ip) {
+            extractedIPs.push(ip);
+          }
+        }
+      });
+
+      resultBox.textContent = extractedIPs.length ? extractedIPs.join('\n') : 'No valid IPs found.';
+    }
+
+    function copyToClipboard() {
+      const resultBox = document.getElementById('resultBox');
+      const range = document.createRange();
+      range.selectNode(resultBox);
+      window.getSelection().removeAllRanges();
+      window.getSelection().addRange(range);
+      document.execCommand('copy');
+      window.getSelection().removeAllRanges();
+      alert('Copied to clipboard!');
+    }
+  </script>
+
+</body>
+</html>
