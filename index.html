@@ -82,6 +82,34 @@
     button:hover {
       background-color: #e56d00;
     }
+    .footer {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 10px; /* Space between content and footer */
+        }
+
+    .footer-icons {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Space between icons */
+            margin-bottom: 10px;
+        }
+
+    .footer-icons a {
+            color: #000; /* Icon link color */
+            text-decoration: none;
+        }
+
+    .footer-icons img {
+            width: 30px; /* Icon size */
+            height: 30px;
+        }
+
+    .footer-text {
+            color: #000; /* Text color */
+            font-size: 14px;
+        }
   </style>
 </head>
 <body>
@@ -100,6 +128,22 @@
     </div>
   </div>
 
+    <!-- Footer Section -->
+    <br>
+    <div class="footer">
+        <div class="footer-icons">
+            <a href="https://t.me/Surfboardv2ray" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram Icon">
+            </a>
+            <a href="https://github.com/Surfboardv2ray" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Octicons-mark-github.svg" alt="GitHub Icon">
+            </a>
+        </div>
+        <div class="line"></div>
+        <div class="footer-text">
+            Surfboardv2ray, 2024
+        </div>
+    </div>
   <script>
     function isBase64(str) {
       try {
